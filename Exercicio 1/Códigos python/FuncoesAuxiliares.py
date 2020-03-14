@@ -7,9 +7,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import statsmodels.api as sm
 from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression
-from sklearn.feature_selection import RFE
-from sklearn.linear_model import RidgeCV, LassoCV, Ridge, Lasso
+from sklearn import preprocessing
+
 def getDataframeInSpecificFormat(datasetPath):
     availabelFormats = ['csv','xslx','txt']
     datasetDataFrame = None
@@ -70,30 +69,33 @@ def getCorrelationInDataframe(datasetDataFrame,outputName):
     cor_target = abs(cor[outputName]).sort_values(ascending=False)
     return cor_target[1:]
 
-def getMostCorrelatedColumns(datasetDataFrame,outputName,numberOfVariables):
+def getCorrelatedDataFrame(datasetDataFrame,outputName,numberOfRelevantVariables):
     cor_target =  getCorrelationInDataframe(datasetDataFrame,outputName)
-    columnsNames = list(cor_target.keys()[:numberOfVariables])
-    print (columnsNames)
-    return columnsNames
+    columnsNames = list(cor_target.keys()[numberOfRelevantVariables:])
+    dummiesDataFrame = pd.get_dummies(datasetDataFrame)
+    return dummiesDataFrame.drop(columns = columnsNames)
 
-def getCorrelatedDataFrame(datasetDataFrame,outputName,numberOfVariables):
-    cor_target =  getCorrelationInDataframe(datasetDataFrame,outputName)
-    columnsNames = list(cor_target.keys()[numberOfVariables:])
-    return datasetDataFrame.drop(columns = columnsNames)
-
-def saveCorrelationImage(datasetDataFrame,folderPath,imageName,outputName,numberOfVariables):
+def saveCorrelationImage(datasetDataFrame,folderPath,imageName,outputName,numberOfRelevantVariables):
     dummiesDataFrame = pd.get_dummies(datasetDataFrame)
     cor_target =  getCorrelationInDataframe(datasetDataFrame,outputName)
-    columnsNamesToBeRemoved = list(cor_target.keys()[numberOfVariables:])
+    columnsNamesToBeRemoved = list(cor_target.keys()[numberOfRelevantVariables:])
     correlatedDataFrame = dummiesDataFrame.drop(columns = columnsNamesToBeRemoved)
-
-    plt.figure(figsize=(20,20))
+    plt.figure(figsize=(50,50))
     cor = correlatedDataFrame.corr()
-    sns.heatmap(cor, annot=True, cmap=plt.cm.Reds)
+    sns.set(font_scale=4)
+    sns.heatmap(cor, annot=True, cmap=plt.cm.Reds, annot_kws={"size": 70})
     # sns.heatmap(cor, annot=True, cmap=plt.cm.Reds,xticklabels=columns, yticklabels=columns)
     plt.savefig(folderPath+imageName)
 
-def prepareDatasetforTraining(datasetDataFrame):
-    dummiesDataFrame = pd.get_dummies(datasetDataFrame)
-    for col in dummiesDataFrame.columns: 
-        print(col)
+def prepareDatasetforTraining(datasetDataFrame,outputName,numberOfRelevantVariables):
+    dataFrame  = getCorrelatedDataFrame(datasetDataFrame,outputName,numberOfRelevantVariables)
+    columns = list(dataFrame.columns)
+    columns.remove(outputName)
+    columns.append(outputName)
+    dataFrame = dataFrame[columns]
+    data = dataFrame.to_numpy()  
+    dataScaled = preprocessing.MinMaxScaler().fit_transform(data)
+    df = pd.DataFrame(dataScaled)
+    df.columns = columns
+    X_train, X_test, y_train, y_test = train_test_split(df.drop(columns = outputName).to_numpy() ,df[outputName].to_numpy() , test_size=0.2, random_state=42)
+    return X_train, X_test, y_train, y_test
