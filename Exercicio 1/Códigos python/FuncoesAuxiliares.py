@@ -57,10 +57,12 @@ def printOccurencesAndPercentagesOfMissingValuesByColumns(datasetPath):
 
 def removeLinesWithMissingValues(datasetDataFrame):
     linesToBeRemoved = []
+    print(len(datasetDataFrame.index))
     for index, row in datasetDataFrame.iterrows():
         if '?' in list(row):
             linesToBeRemoved.append(index)
     datasetDataFrameWithMissingLines = datasetDataFrame.drop(linesToBeRemoved)
+    print(len(datasetDataFrameWithMissingLines.index))
     return datasetDataFrameWithMissingLines
 
 def getCorrelationInDataframe(datasetDataFrame,outputName):
@@ -80,10 +82,10 @@ def saveCorrelationImage(datasetDataFrame,folderPath,imageName,outputName,number
     cor_target =  getCorrelationInDataframe(datasetDataFrame,outputName)
     columnsNamesToBeRemoved = list(cor_target.keys()[numberOfRelevantVariables:])
     correlatedDataFrame = dummiesDataFrame.drop(columns = columnsNamesToBeRemoved)
-    plt.figure(figsize=(50,50))
+    plt.figure(figsize=(50,40))
     cor = correlatedDataFrame.corr()
     sns.set(font_scale=4)
-    sns.heatmap(cor, annot=True, cmap=plt.cm.Reds, annot_kws={"size": 70})
+    sns.heatmap(cor, annot=True, cmap=plt.cm.Reds, annot_kws={"size": 50})
     # sns.heatmap(cor, annot=True, cmap=plt.cm.Reds,xticklabels=columns, yticklabels=columns)
     plt.savefig(folderPath+imageName)
 
