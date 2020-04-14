@@ -14,16 +14,16 @@ def main():
     dataFrameWithRemovedColumns = fa.removeColumnsWithMissingValues(datasetDataFrame)
     dataFrameWithRemovedLines = fa.removeLinesWithMissingValues(datasetDataFrame)
     
-    # fa.printOccurencesAndPercentagesOfMissingValuesByColumns(datasetPath)
+    fa.printOccurencesAndPercentagesOfMissingValuesByColumns(datasetPath)
     
-    # fa.saveCorrelationImage(datasetDataFrame,pathToSaveTable,correlationImageName,outputName,numberOfRelevantVariables = 10)
+    fa.saveCorrelationImage(datasetDataFrame,pathToSaveTable,correlationImageName,outputName,numberOfRelevantVariables = 10)
     
-    # ## Aplica algoritmo knn com variacao de parametros 
-    # fileName = 'KNN_com_linhas_removidas.xlsx'
-    # fm.applyKNNWithDifferentHyperparameters(dataFrameWithRemovedLines,pathToSaveTable, fileName,outputName,numberOfRelevantVariables)
+    ## Aplica algoritmo knn com variacao de parametros 
+    fileName = 'KNN_com_linhas_removidas.xlsx'
+    fm.applyKNNWithDifferentHyperparameters(dataFrameWithRemovedLines,pathToSaveTable, fileName,outputName,numberOfRelevantVariables)
     
-    # ## Aplica algoritmo naive bayes com variacao de parametros 
-    # fileName = 'Naive_Bayes_com_linhas_removidas.xlsx'
-    # fm.applyNaiveBayesWithDifferentHyperparameters(dataFrameWithRemovedLines, pathToSaveTable,fileName,outputName,numberOfRelevantVariables)
+    ## Aplica algoritmo naive bayes com variacao de parametros 
+    fileName = 'Naive_Bayes_com_linhas_removidas.xlsx'
+    fm.applyNaiveBayesWithDifferentHyperparameters(dataFrameWithRemovedLines, pathToSaveTable,fileName,outputName,numberOfRelevantVariables)
 if __name__ == "__main__":
     main()
